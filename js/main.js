@@ -3,7 +3,7 @@
  * (c) 2015 Michael Dominice
  * main.js is freely distributable under the MIT license.
  */
-(function (document) {
+(function (window, document) {
     'use strict';
 
     var KEYS = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'],
@@ -76,9 +76,10 @@
     }
 
     document.addEventListener('DOMContentLoaded', function () {
-        updateCopyright();
+        window.FastClick.attach(document.body);
         var seeder = new SongSeeder(document.getElementById('main'));
         seeder.randomize();
+        updateCopyright();
     }, false);
 
-}(this.document));
+}(this, this.document));
