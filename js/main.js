@@ -64,10 +64,7 @@
         }
 
         each(el.querySelectorAll('.randomizer'), function (randomizer) {
-            randomizer.addEventListener('click', function () {
-                randomize();
-                randomizer.blur();
-            });
+            randomizer.addEventListener('click', randomize);
         });
     }
 
