@@ -1,3 +1,8 @@
+/**
+ * main.js
+ * (c) 2015 Michael Dominice
+ * main.js is freely distributable under the MIT license.
+ */
 (function (document) {
     'use strict';
 
@@ -9,6 +14,7 @@
             'A#' : 'Bb',
             'A#m' : 'Bbm'
         },
+        // Source: http://hindson.com.au/info/numbers-on-a-standard-metronome/
         TEMPOS = [
             40,  42,  44,  46,  48,  50,  52,
             54,  56,  58,  60,  63,  66,  69,
@@ -62,7 +68,15 @@
         });
     }
 
+    function updateCopyright() {
+        var year = (new Date()).getFullYear();
+        if (year > 2015) {
+            document.getElementById('copyright').innerHTML = '&copy; 2015-' + year + ' Mike Dominice';
+        }
+    }
+
     document.addEventListener('DOMContentLoaded', function () {
+        updateCopyright();
         var seeder = new SongSeeder(document.getElementById('main'));
         seeder.randomize();
     }, false);

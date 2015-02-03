@@ -1,3 +1,8 @@
+/**
+ * Gruntfile.js
+ * (c) 2015 Michael Dominice
+ * Gruntfile.js is freely distributable under the MIT license.
+ */
 module.exports = function (grunt) {
 
     grunt.loadNpmTasks('grunt-contrib-connect');
