@@ -61,11 +61,13 @@
             each(el.querySelectorAll('.tempo'), function (target) {
                 target.innerHTML = tempo + ' bpm';
             });
-            document.body.blur();
         }
 
         each(el.querySelectorAll('.randomizer'), function (randomizer) {
-            randomizer.addEventListener('click', randomize);
+            randomizer.addEventListener('click', function () {
+                randomize();
+                randomizer.blur();
+            });
         });
     }
 
