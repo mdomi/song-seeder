@@ -61,6 +61,7 @@
             each(el.querySelectorAll('.tempo'), function (target) {
                 target.innerHTML = tempo + ' bpm';
             });
+            document.body.focus();
         }
 
         each(el.querySelectorAll('.randomizer'), function (randomizer) {
