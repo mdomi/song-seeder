@@ -57,7 +57,14 @@ module.exports = function (grunt) {
                 options : {
                     sourceMap : true,
                     sourceMapIncludeSources : true,
-                    sourceMapIn : 'build/main.js.map'
+                    sourceMapIn : 'build/main.js.map',
+                    banner : [
+                        '/**',
+                        ' * main-min.js',
+                        ' * (c) 2015 Michael Dominice',
+                        ' * main-min.js is freely distributable under the MIT license.',
+                        ' */'
+                    ].join('\n')
                 },
                 files : {
                     'js/main-min.js' : [

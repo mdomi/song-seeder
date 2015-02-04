@@ -10,3 +10,9 @@ html, body {
 body {
     padding-top: 100px;
 }
+
+.main .randomizer {
+    max-width: 200px;
+    margin-left: auto;
+    margin-right: auto;
+}
