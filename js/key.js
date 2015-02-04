@@ -3,13 +3,13 @@
  * (c) 2015 Michael Dominice
  * key.js is freely distributable under the MIT license.
  */
-(function (window, random, Note) {
+(function (window, random, Note, Interval) {
     'use strict';
 
     var MAJOR = 'major',
         MINOR = 'minor',
-        HALF_STEP = 1,
-        WHOLE_STEP = 2,
+        HALF_STEP = Interval.HALF_STEP,
+        WHOLE_STEP = Interval.WHOLE_STEP,
         INTERVALS = {},
         KEYS = Note.all(),
         KEY_OVERRIDES = {
@@ -108,4 +108,4 @@
 
     window.Key = Key;
 
-}(window, window.random, window.Note));
+}(window, window.random, window.Note, window.Interval));

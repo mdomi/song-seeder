@@ -24,6 +24,28 @@
         });
     }
 
+    Note.prototype.hasSharps = function () {
+        return this.name.indexOf('#') > 0;
+    };
+
+    Note.prototype.hasFlats = function () {
+        return this.name.indexOf('b') > 0;
+    };
+
+    Note.prototype.flatten = function () {
+        if (this.hasSharps()) {
+            return new Note(this.name.slice(0, this.name.length - 1));
+        }
+        return new Note(this.name + 'b');
+    };
+
+    Note.prototype.sharpen = function () {
+        if (this.hasFlats()) {
+            return new Note(this.name.slice(0, this.name.length - 1));
+        }
+        return new Note(this.name + '#');
+    };
+
     Note.prototype.interval = function (x) {
         var index = getIndex(this.name) + x;
         return new Note(getName(index));

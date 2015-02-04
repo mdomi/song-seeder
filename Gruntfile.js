@@ -45,6 +45,7 @@ module.exports = function (grunt) {
             source : {
                 files : {
                     'build/random.js' : 'js/random.js',
+                    'build/interval.js' : 'js/interval.js',
                     'build/note.js' : 'js/note.js',
                     'build/key.js' : 'js/key.js',
                     'build/tempo.js' : 'js/tempo.js',
@@ -70,6 +71,7 @@ module.exports = function (grunt) {
                 files : {
                     'js/main-min.js' : [
                         'build/random.js',
+                        'build/interval.js',
                         'build/note.js',
                         'build/key.js',
                         'build/tempo.js',
