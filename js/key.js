@@ -3,12 +3,15 @@
  * (c) 2015 Michael Dominice
  * key.js is freely distributable under the MIT license.
  */
-(function (window, random) {
+(function (window, random, Note) {
     'use strict';
 
     var MAJOR = 'major',
         MINOR = 'minor',
-        KEYS = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'],
+        HALF_STEP = 1,
+        WHOLE_STEP = 2,
+        INTERVALS = {},
+        KEYS = Note.all(),
         KEY_OVERRIDES = {
             'C#' : 'Db',
             'D#' : 'Eb',
@@ -17,7 +20,13 @@
             'A#m' : 'Bbm'
         };
 
+    INTERVALS[MAJOR] = [WHOLE_STEP, WHOLE_STEP, HALF_STEP, WHOLE_STEP, WHOLE_STEP, WHOLE_STEP];
+    INTERVALS[MINOR] = [WHOLE_STEP, HALF_STEP, WHOLE_STEP, WHOLE_STEP, HALF_STEP, WHOLE_STEP];
+
     function Key(tonic, quality) {
+        if (!(tonic instanceof Note)) {
+            tonic = Note.create(tonic);
+        }
         Object.defineProperty(this, 'tonic', {
             get : function () {
                 return tonic;
@@ -35,7 +44,7 @@
         });
         Object.defineProperty(this, 'shortName', {
             get : function () {
-                var shortName = tonic;
+                var shortName = String(tonic);
                 if (quality === MINOR) {
                     shortName = shortName + 'm';
                 }
@@ -43,6 +52,13 @@
             }
         });
     }
+
+    Key.prototype.getNotes = function () {
+        return INTERVALS[this.quality].reduce(function (notes, interval) {
+            notes.push(notes[notes.length - 1].interval(interval));
+            return notes;
+        }, [this.tonic]);
+    };
 
     Object.defineProperty(Key, 'MINOR', {
         get : function () {
@@ -69,7 +85,7 @@
 
     Key.prototype.preferred = function () {
         if (KEY_OVERRIDES.hasOwnProperty(this.shortName)) {
-            return new Key(KEY_OVERRIDES[this.tonic], this.quality);
+            return new Key(Note.create(KEY_OVERRIDES[this.shortName]), this.quality);
         }
         return this;
     };
@@ -92,4 +108,4 @@
 
     window.Key = Key;
 
-}(window, window.random));
+}(window, window.random, window.Note));
