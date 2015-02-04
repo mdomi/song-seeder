@@ -7,6 +7,8 @@ module.exports = function (grunt) {
 
     grunt.loadNpmTasks('grunt-contrib-connect');
     grunt.loadNpmTasks('grunt-contrib-watch');
+    grunt.loadNpmTasks('grunt-contrib-uglify');
+    grunt.loadNpmTasks('grunt-contrib-jade');
 
     grunt.initConfig({
         connect : {
@@ -16,6 +18,23 @@ module.exports = function (grunt) {
                     port : parseInt(process.env.PORT || '8000', 10),
                     hostname : 'localhost',
                     livereload : 35730
+                }
+            }
+        },
+        uglify : {
+            source : {
+                options : {
+                    sourceMap : true
+                },
+                files : {
+                    'js/main-min.js' : ['js/main.js']
+                }
+            }
+        },
+        jade : {
+            index : {
+                files : {
+                    'index.html' : ['views/index.jade']
                 }
             }
         },
@@ -31,14 +50,21 @@ module.exports = function (grunt) {
                 files : ['Gruntfile.js']
             },
             js : {
-                files : ['js/**/*.js']
+                files : ['js/main.js'],
+                tasks : ['uglify']
             },
             css : {
                 files : ['css/**/*.css']
+            },
+            jade : {
+                files : ['views/**/*.jade'],
+                tasks : ['jade']
             }
         }
     });
 
-    grunt.registerTask('serve', ['connect', 'watch']);
+    grunt.registerTask('build', ['uglify', 'jade']);
+    grunt.registerTask('serve', ['build', 'connect', 'watch']);
+    grunt.registerTask('default', ['build']);
 
 };
