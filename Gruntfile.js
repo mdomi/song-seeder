@@ -7,6 +7,11 @@ module.exports = function (grunt) {
 
     grunt.loadNpmTasks('grunt-contrib-connect');
     grunt.loadNpmTasks('grunt-contrib-watch');
+    grunt.loadNpmTasks('grunt-contrib-uglify');
+    grunt.loadNpmTasks('grunt-contrib-jade');
+    grunt.loadNpmTasks('grunt-contrib-jshint');
+    grunt.loadNpmTasks('grunt-karma');
+    grunt.loadNpmTasks('grunt-6to5');
 
     grunt.initConfig({
         connect : {
@@ -19,6 +24,76 @@ module.exports = function (grunt) {
                 }
             }
         },
+        jshint : {
+            options : {
+                jshintrc : true
+            },
+            js : {
+                files : {
+                    src : ['js/**/*.js', '!js/main-min.js']
+                }
+            },
+            grunt : {
+                files : {
+                    src : ['Gruntfile.js']
+                }
+            },
+            test : {
+                files : {
+                    src : ['test/**/*.js']
+                }
+            }
+        },
+        '6to5' : {
+            options : {
+                sourceMap : true
+            },
+            source : {
+                files : {
+                    'build/random.js' : 'js/random.js',
+                    'build/interval.js' : 'js/interval.js',
+                    'build/note.js' : 'js/note.js',
+                    'build/key.js' : 'js/key.js',
+                    'build/tempo.js' : 'js/tempo.js',
+                    'build/songseeder.js' : 'js/songseeder.js',
+                    'build/main.js' : 'js/main.js'
+                }
+            }
+        },
+        uglify : {
+            source : {
+                options : {
+                    sourceMap : true,
+                    sourceMapIncludeSources : true,
+                    sourceMapIn : 'build/main.js.map',
+                    banner : [
+                        '/**',
+                        ' * main-min.js',
+                        ' * (c) 2015 Michael Dominice',
+                        ' * main-min.js is freely distributable under the MIT license.',
+                        ' */'
+                    ].join('\n')
+                },
+                files : {
+                    'js/main-min.js' : [
+                        'build/random.js',
+                        'build/interval.js',
+                        'build/note.js',
+                        'build/key.js',
+                        'build/tempo.js',
+                        'build/songseeder.js',
+                        'build/main.js'
+                    ]
+                }
+            }
+        },
+        jade : {
+            source : {
+                files : {
+                    'index.html' : ['views/index.jade']
+                }
+            }
+        },
         watch : {
             options : {
                 livereload : 35730,
@@ -28,17 +103,35 @@ module.exports = function (grunt) {
                 files : ['index.html']
             },
             grunt : {
-                files : ['Gruntfile.js']
+                files : ['Gruntfile.js'],
+                tasks : ['jshint:grunt']
             },
             js : {
-                files : ['js/**/*.js']
+                files : ['js/**/*.js', '!js/main-min.js'],
+                tasks : ['jshint:js', '6to5', 'karma', 'uglify']
             },
             css : {
                 files : ['css/**/*.css']
+            },
+            jade : {
+                files : ['views/**/*.jade'],
+                tasks : ['jade']
+            },
+            test : {
+                files : ['test/**/*.js'],
+                tasks : ['jshint:test', 'karma']
+            }
+        },
+        karma : {
+            unit : {
+                configFile : 'test/karma.conf.js',
+                singleRun : true
             }
         }
     });
 
-    grunt.registerTask('serve', ['connect', 'watch']);
+    grunt.registerTask('build', ['jshint', '6to5', 'karma', 'uglify', 'jade']);
+    grunt.registerTask('serve', ['build', 'connect', 'watch']);
+    grunt.registerTask('default', ['build']);
 
 };
