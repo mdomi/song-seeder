@@ -10,6 +10,7 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-jade');
     grunt.loadNpmTasks('grunt-contrib-jshint');
+    grunt.loadNpmTasks('grunt-karma');
     grunt.loadNpmTasks('grunt-6to5');
 
     grunt.initConfig({
@@ -29,7 +30,7 @@ module.exports = function (grunt) {
             },
             js : {
                 files : {
-                    src : ['js/main.js']
+                    src : ['js/**/*.js', '!js/main-min.js']
                 }
             },
             grunt : {
@@ -102,7 +103,7 @@ module.exports = function (grunt) {
             },
             js : {
                 files : ['js/**/*.js', '!js/main-min.js'],
-                tasks : ['jshint:js', '6to5', 'uglify']
+                tasks : ['jshint:js', '6to5', 'karma', 'uglify']
             },
             css : {
                 files : ['css/**/*.css']
@@ -110,6 +111,16 @@ module.exports = function (grunt) {
             jade : {
                 files : ['views/**/*.jade'],
                 tasks : ['jade']
+            },
+            test : {
+                files : ['test/**/*.js'],
+                tasks : ['karma']
+            }
+        },
+        karma : {
+            unit : {
+                configFile : 'test/karma.conf.js',
+                singleRun : true
             }
         }
     });

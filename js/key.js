@@ -11,13 +11,12 @@
         HALF_STEP = Interval.HALF_STEP,
         WHOLE_STEP = Interval.WHOLE_STEP,
         INTERVALS = {},
-        KEYS = Note.all(),
         KEY_OVERRIDES = {
             'C#' : 'Db',
             'D#' : 'Eb',
             'G#' : 'Ab',
             'A#' : 'Bb',
-            'A#m' : 'Bbm'
+            'A#m' : 'Bb'
         };
 
     INTERVALS[MAJOR] = [WHOLE_STEP, WHOLE_STEP, HALF_STEP, WHOLE_STEP, WHOLE_STEP, WHOLE_STEP];
@@ -25,7 +24,7 @@
 
     function Key(tonic, quality) {
         if (!(tonic instanceof Note)) {
-            tonic = Note.create(tonic);
+            tonic = Note.parse(tonic);
         }
         Object.defineProperty(this, 'tonic', {
             get : function () {
@@ -53,11 +52,19 @@
         });
     }
 
+    function addNextNote(notes, interval) {
+        var lastNote = notes[notes.length - 1],
+            nextNote = lastNote.interval(interval);
+        notes.push(nextNote);
+        return notes;
+    }
+
     Key.prototype.getNotes = function () {
-        return INTERVALS[this.quality].reduce(function (notes, interval) {
-            notes.push(notes[notes.length - 1].interval(interval));
-            return notes;
-        }, [this.tonic]);
+        var notes = INTERVALS[this.quality].reduce(addNextNote, [this.tonic]);
+
+        return Note.letters(this.tonic.letter).map(function (letter, i) {
+            return notes[i].resolveTo(letter);
+        });
     };
 
     Object.defineProperty(Key, 'MINOR', {
@@ -95,12 +102,8 @@
     };
 
     Key.random = function () {
-        return Key.create(randomKeyName(), randomQuality()).preferred();
+        return Key.create(Note.random(), randomQuality()).preferred();
     };
-
-    function randomKeyName() {
-        return random.choice(KEYS);
-    }
 
     function randomQuality() {
         return random.randomInt(1) ? MAJOR : MINOR;

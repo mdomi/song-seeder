@@ -3,52 +3,124 @@
  * (c) 2015 Michael Dominice
  * note.js is freely distributable under the MIT license.
  */
-(function (window) {
+(function (window, random) {
     'use strict';
 
-    var NOTES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+    var LETTERS = ['C', 'D', 'E', 'F', 'G', 'A', 'B'],
+        NOTES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
 
-    function getIndex(name) {
+    function times(x, character) {
+        var str = '',
+            i = 0;
+        for (i = 0; i < x; i++) {
+            str = str + character;
+        }
+        return str;
+    }
+
+    function getLetterIndex(letter) {
+        return LETTERS.indexOf(letter);
+    }
+
+    function getLetterName(i) {
+        return LETTERS[i % LETTERS.length];
+    }
+
+    function getNoteIndex(name) {
         return NOTES.indexOf(name);
     }
 
-    function getName(i) {
-        return NOTES[i % NOTES.length];
+    function getNoteName(i) {
+        return NOTES[normalizeNoteIndex(i)];
     }
 
-    function Note(name) {
+    function normalizeNoteIndex(i) {
+        return i % NOTES.length;
+    }
+
+    function Note(letter, suffix) {
+        if (letter.length !== 1) {
+            throw new Error('invalid letter!');
+        }
+        suffix = suffix || '';
+
+        Object.defineProperty(this, 'letter', {
+            get : function () {
+                return letter;
+            }
+        });
+        Object.defineProperty(this, 'suffix', {
+            get : function () {
+                return suffix;
+            }
+        });
         Object.defineProperty(this, 'name', {
             get : function () {
-                return name;
+                return letter + suffix;
+            }
+        });
+        Object.defineProperty(this, 'number', {
+            get : function () {
+                var base = getNoteIndex(letter);
+                if (suffix.charAt(0) === 'b') {
+                    base = base - suffix.length;
+                } else if (suffix.charAt(0) === '#') {
+                    base = base + suffix.length;
+                }
+                return normalizeNoteIndex(base);
             }
         });
     }
 
     Note.prototype.hasSharps = function () {
-        return this.name.indexOf('#') > 0;
+        return this.suffix.indexOf('#') > -1;
     };
 
     Note.prototype.hasFlats = function () {
-        return this.name.indexOf('b') > 0;
+        return this.suffix.indexOf('b') > -1;
     };
 
     Note.prototype.flatten = function () {
         if (this.hasSharps()) {
-            return new Note(this.name.slice(0, this.name.length - 1));
+            return new Note(this.letter, this.suffix.slice(0, this.suffix.length - 1));
         }
-        return new Note(this.name + 'b');
+        return new Note(this.letter, this.suffix + 'b');
     };
 
     Note.prototype.sharpen = function () {
         if (this.hasFlats()) {
-            return new Note(this.name.slice(0, this.name.length - 1));
+            return new Note(this.letter, this.suffix.slice(0, this.suffix.length - 1));
         }
-        return new Note(this.name + '#');
+        return new Note(this.letter, this.suffix + '#');
+    };
+
+    function getDiffSuffix(diff, a, b) {
+        var as = times(diff, a),
+            bs = times(NOTES.length - 1 - diff, b);
+        if (as.length < bs.length) {
+            return as;
+        } else if (bs.length < as.length) {
+            return bs;
+        }
+        return ;
+    }
+
+    Note.prototype.resolveTo = function (letter) {
+        var letterNote = Note.create(letter),
+            diff = this.number - letterNote.number;
+        if (diff > 0) {
+            // window.console.log(this + ' ' + letterNote + ' positive(%s)', getDiffSuffix(diff, '#', 'b'));
+            return Note.create(letter, getDiffSuffix(diff, '#', 'b'));
+        } else if (diff < 0) {
+            // window.console.log(this + ' ' + letterNote + ' negative(%s)', getDiffSuffix(Math.abs(diff), 'b', '#'));
+            return Note.create(letter, getDiffSuffix(Math.abs(diff), 'b', '#'));
+        }
+        return letterNote;
     };
 
     Note.prototype.interval = function (x) {
-        var index = getIndex(this.name) + x;
-        return new Note(getName(index));
+        var index = this.number + x;
+        return Note.parse(getNoteName(index));
     };
 
     Note.prototype.toJSON = function () {
@@ -61,14 +133,34 @@
         return this.name;
     };
 
-    Note.create = function (name) {
-        return new Note(name);
+    Note.create = function (letter, suffix) {
+        if (letter.length > 1) {
+            return Note.parse(letter);
+        }
+        return new Note(letter, suffix);
+    };
+
+    Note.parse = function (string) {
+        var letter = string[0],
+            suffix = string.slice(1);
+        return Note.create(letter, suffix);
+    };
+
+    Note.letters = function (startLetter) {
+        var offset = getLetterIndex(startLetter || 'C');
+        return LETTERS.map(function (letter, i) {
+            return getLetterName(i + offset);
+        });
     };
 
     Note.all = function () {
         return NOTES.map(Note.create);
     };
 
+    Note.random = function () {
+        return Note.parse(random.choice(NOTES));
+    };
+
     window.Note = Note;
 
-}(window));
+}(window, window.random));

@@ -1,0 +1,11 @@
+{
+    "browser" : true,
+    "unused" : true,
+    "undef" : true,
+    "globals" : {
+        "describe" : false,
+        "it" : false,
+        "expect" : false,
+        "sinon" : false
+    }
+}
