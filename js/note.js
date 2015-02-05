@@ -8,11 +8,12 @@
 
     var FLAT = 'b',
         SHARP = '#',
+        EMPTY = '',
         LETTERS = ['C', 'D', 'E', 'F', 'G', 'A', 'B'],
         NOTES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
 
     function times(x, character) {
-        var str = '',
+        var str = EMPTY,
             i = 0;
         for (i = 0; i < x; i++) {
             str = str + character;
@@ -44,7 +45,7 @@
         if (letter.length !== 1) {
             throw new Error('invalid letter!');
         }
-        suffix = suffix || '';
+        suffix = suffix || EMPTY;
 
         Object.defineProperty(this, 'letter', {
             get : function () {
@@ -97,14 +98,13 @@
     };
 
     function getDiffSuffix(diff, a, b) {
-        var as = times(diff, a),
-            bs = times(NOTES.length - 1 - diff, b);
-        if (as.length < bs.length) {
-            return as;
-        } else if (bs.length < as.length) {
-            return bs;
+        var otherDirection = NOTES.length - 1 - diff;
+        if (diff < otherDirection) {
+            return times(diff, a);
+        } else if (otherDirection < diff) {
+            return times(otherDirection, b);
         }
-        return ;
+        return EMPTY;
     }
 
     Note.prototype.resolveTo = function (letter) {
@@ -119,8 +119,7 @@
     };
 
     Note.prototype.interval = function (x) {
-        var index = this.number + x;
-        return Note.parse(getNoteName(index));
+        return Note.parse(getNoteName(this.number + x));
     };
 
     Note.prototype.toJSON = function () {

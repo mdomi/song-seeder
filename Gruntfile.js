@@ -37,6 +37,11 @@ module.exports = function (grunt) {
                 files : {
                     src : ['Gruntfile.js']
                 }
+            },
+            test : {
+                files : {
+                    src : ['test/**/*.js']
+                }
             }
         },
         '6to5' : {
@@ -114,7 +119,7 @@ module.exports = function (grunt) {
             },
             test : {
                 files : ['test/**/*.js'],
-                tasks : ['karma']
+                tasks : ['jshint:test', 'karma']
             }
         },
         karma : {
@@ -125,7 +130,7 @@ module.exports = function (grunt) {
         }
     });
 
-    grunt.registerTask('build', ['jshint', '6to5', 'uglify', 'jade']);
+    grunt.registerTask('build', ['jshint', '6to5', 'karma', 'uglify', 'jade']);
     grunt.registerTask('serve', ['build', 'connect', 'watch']);
     grunt.registerTask('default', ['build']);
 
