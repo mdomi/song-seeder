@@ -6,7 +6,9 @@
 (function (window, random) {
     'use strict';
 
-    var LETTERS = ['C', 'D', 'E', 'F', 'G', 'A', 'B'],
+    var FLAT = 'b',
+        SHARP = '#',
+        LETTERS = ['C', 'D', 'E', 'F', 'G', 'A', 'B'],
         NOTES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
 
     function times(x, character) {
@@ -62,9 +64,9 @@
         Object.defineProperty(this, 'number', {
             get : function () {
                 var base = getNoteIndex(letter);
-                if (suffix.charAt(0) === 'b') {
+                if (suffix.charAt(0) === FLAT) {
                     base = base - suffix.length;
-                } else if (suffix.charAt(0) === '#') {
+                } else if (suffix.charAt(0) === SHARP) {
                     base = base + suffix.length;
                 }
                 return normalizeNoteIndex(base);
@@ -73,25 +75,25 @@
     }
 
     Note.prototype.hasSharps = function () {
-        return this.suffix.indexOf('#') > -1;
+        return this.suffix.indexOf(SHARP) > -1;
     };
 
     Note.prototype.hasFlats = function () {
-        return this.suffix.indexOf('b') > -1;
+        return this.suffix.indexOf(FLAT) > -1;
     };
 
     Note.prototype.flatten = function () {
         if (this.hasSharps()) {
             return new Note(this.letter, this.suffix.slice(0, this.suffix.length - 1));
         }
-        return new Note(this.letter, this.suffix + 'b');
+        return new Note(this.letter, this.suffix + FLAT);
     };
 
     Note.prototype.sharpen = function () {
         if (this.hasFlats()) {
             return new Note(this.letter, this.suffix.slice(0, this.suffix.length - 1));
         }
-        return new Note(this.letter, this.suffix + '#');
+        return new Note(this.letter, this.suffix + SHARP);
     };
 
     function getDiffSuffix(diff, a, b) {
@@ -109,11 +111,9 @@
         var letterNote = Note.create(letter),
             diff = this.number - letterNote.number;
         if (diff > 0) {
-            // window.console.log(this + ' ' + letterNote + ' positive(%s)', getDiffSuffix(diff, '#', 'b'));
-            return Note.create(letter, getDiffSuffix(diff, '#', 'b'));
+            return Note.create(letter, getDiffSuffix(diff, SHARP, FLAT));
         } else if (diff < 0) {
-            // window.console.log(this + ' ' + letterNote + ' negative(%s)', getDiffSuffix(Math.abs(diff), 'b', '#'));
-            return Note.create(letter, getDiffSuffix(Math.abs(diff), 'b', '#'));
+            return Note.create(letter, getDiffSuffix(Math.abs(diff), FLAT, SHARP));
         }
         return letterNote;
     };
