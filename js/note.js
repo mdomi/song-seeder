@@ -6,11 +6,15 @@
 (function (window, random) {
     'use strict';
 
-    var FLAT = 'b',
-        SHARP = '#',
+    var FLAT = '\u266d',
+        SHARP = '\u266F',
         EMPTY = '',
         LETTERS = ['C', 'D', 'E', 'F', 'G', 'A', 'B'],
-        NOTES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+        NOTES = ['C', sharp('C'), 'D', sharp('D'), 'E', 'F', sharp('F'), 'G', sharp('G'), 'A', sharp('A'), 'B'];
+
+    function sharp(note) {
+        return note + SHARP;
+    }
 
     function times(x, character) {
         var str = EMPTY,
@@ -71,6 +75,22 @@
                     base = base + suffix.length;
                 }
                 return normalizeNoteIndex(base);
+            }
+        });
+        Object.defineProperty(this, 'flats', {
+            get : function () {
+                if (suffix.charAt(0) === FLAT) {
+                    return suffix.length;
+                }
+                return 0;
+            }
+        });
+        Object.defineProperty(this, 'sharps', {
+            get : function () {
+                if (suffix.charAt(0) === SHARP) {
+                    return suffix.length;
+                }
+                return 0;
             }
         });
     }
@@ -141,7 +161,7 @@
 
     Note.parse = function (string) {
         var letter = string[0],
-            suffix = string.slice(1);
+            suffix = string.slice(1).replace(/b/g, FLAT).replace(/#/g, SHARP);
         return Note.create(letter, suffix);
     };
 
@@ -159,6 +179,18 @@
     Note.random = function () {
         return Note.parse(random.choice(NOTES));
     };
+
+    Object.defineProperty(Note, 'SHARP', {
+        get : function () {
+            return SHARP;
+        }
+    });
+
+    Object.defineProperty(Note, 'FLAT', {
+        get : function () {
+            return FLAT;
+        }
+    });
 
     window.Note = Note;
 

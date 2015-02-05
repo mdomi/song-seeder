@@ -8,9 +8,14 @@ describe('Key', function () {
     var Note = window.Note,
         Key = window.Key;
 
+    function consolizeNote(string) {
+        return string.replace(new RegExp(Note.FLAT, 'g'), 'b')
+            .replace(new RegExp(Note.SHARP, 'g'), '#');
+    }
+
     function testKey(keyName, quality, scale, message) {
         var key = Key.create(Note.create(keyName), quality);
-        expect(key.getNotes().join(' ')).toBe(scale, message);
+        expect(consolizeNote(key.getNotes().join(' '))).toBe(scale, message);
     }
 
     function testMajorKey(keyName, scale) {
@@ -50,6 +55,46 @@ describe('Key', function () {
         testMinorKey('C', 'C D Eb F G Ab Bb');
         testMinorKey('G', 'G A Bb C D Eb F');
         testMinorKey('D', 'D E F G A Bb C');
+    });
+
+    function testSharpCount(keyName, count) {
+        var key = Key.create(Note.create(keyName), Key.MAJOR);
+        expect(key.sharps).toBe(count, 'Expected ' + keyName + ' to have ' + count + ' sharps');
+    }
+
+    it('reports correct number of sharps', function () {
+        testSharpCount('C', 0);
+        testSharpCount('G', 1);
+        testSharpCount('D', 2);
+        testSharpCount('A', 3);
+        testSharpCount('E', 4);
+        testSharpCount('B', 5);
+        testSharpCount('F#', 6);
+        testSharpCount('Db', 0);
+        testSharpCount('Ab', 0);
+        testSharpCount('Eb', 0);
+        testSharpCount('Bb', 0);
+        testSharpCount('F', 0);
+    });
+
+    function testFlatCount(keyName, count) {
+        var key = Key.create(Note.create(keyName), Key.MAJOR);
+        expect(key.flats).toBe(count, 'Expected ' + keyName + ' to have ' + count + ' flats');
+    }
+
+    it('reports correct number of sharps', function () {
+        testFlatCount('C', 0);
+        testFlatCount('G', 0);
+        testFlatCount('D', 0);
+        testFlatCount('A', 0);
+        testFlatCount('E', 0);
+        testFlatCount('B', 0);
+        testFlatCount('F#', 0);
+        testFlatCount('Db', 5);
+        testFlatCount('Ab', 4);
+        testFlatCount('Eb', 3);
+        testFlatCount('Bb', 2);
+        testFlatCount('F', 1);
     });
 
 });

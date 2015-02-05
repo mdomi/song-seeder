@@ -12,11 +12,11 @@
         WHOLE_STEP = Interval.WHOLE_STEP,
         INTERVALS = {},
         KEY_OVERRIDES = {
-            'C#' : 'Db',
-            'D#' : 'Eb',
-            'G#' : 'Ab',
-            'A#' : 'Bb',
-            'A#m' : 'Bb'
+            'C\u266F' : 'D\u266d',
+            'D\u266F' : 'E\u266d',
+            'G\u266F' : 'A\u266d',
+            'A\u266F' : 'B\u266d',
+            'A\u266Fm' : 'B\u266d'
         };
 
     INTERVALS[MAJOR] = [WHOLE_STEP, WHOLE_STEP, HALF_STEP, WHOLE_STEP, WHOLE_STEP, WHOLE_STEP];
@@ -50,6 +50,20 @@
                 return shortName;
             }
         });
+        Object.defineProperty(this, 'flats', {
+            get : function () {
+                return getNotes(tonic, quality).reduce(function (count, note) {
+                    return count + note.flats;
+                }, 0);
+            }
+        });
+        Object.defineProperty(this, 'sharps', {
+            get : function () {
+                return getNotes(tonic, quality).reduce(function (count, note) {
+                    return count + note.sharps;
+                }, 0);
+            }
+        });
     }
 
     function addNextNote(notes, interval) {
@@ -60,11 +74,7 @@
     }
 
     Key.prototype.getNotes = function () {
-        var notes = INTERVALS[this.quality].reduce(addNextNote, [this.tonic]);
-
-        return Note.letters(this.tonic.letter).map(function (letter, i) {
-            return notes[i].resolveTo(letter);
-        });
+        return getNotes(this.tonic, this.quality);
     };
 
     Object.defineProperty(Key, 'MINOR', {
@@ -107,6 +117,14 @@
 
     function randomQuality() {
         return random.randomInt(1) ? MAJOR : MINOR;
+    }
+
+    function getNotes(tonic, quality) {
+        var notes = INTERVALS[quality].reduce(addNextNote, [tonic]);
+
+        return Note.letters(tonic.letter).map(function (letter, i) {
+            return notes[i].resolveTo(letter);
+        });
     }
 
     window.Key = Key;

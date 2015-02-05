@@ -16,8 +16,14 @@ html(lang="en")
         #main.main.container
             .panel.panel-default
                 .panel-body
-                    h1.text-center.key -
-                    h1.text-center.tempo -
+                    h3.text-center.key -
+                    h3.text-center.tempo -
+                    svg(width="250", height="125")
+                        g
+                            rect.staff-bar(x="2", y="12.5", width="246", height="25")
+                            rect.staff-bar(x="2", y="37.5", width="246", height="25")
+                            rect.staff-bar(x="2", y="62.5", width="246", height="25")
+                            rect.staff-bar(x="2", y="87.5", width="246", height="25")
                 .panel-footer
                     button.btn.btn-primary.btn-lg.btn-block.randomizer(type="button") Randomize
 

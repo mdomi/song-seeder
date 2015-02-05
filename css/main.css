@@ -16,3 +16,9 @@ body {
     margin-left: auto;
     margin-right: auto;
 }
+
+.staff-bar {
+    stroke: #444444;
+    stroke-width: 2px;
+    fill: none;
+}
